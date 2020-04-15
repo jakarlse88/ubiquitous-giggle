@@ -1,0 +1,6 @@
+version: "3.7"
+services:
+    mtk-client:
+        image: jakarlse88/mtk-client
+        ports:
+            - "8080:80"

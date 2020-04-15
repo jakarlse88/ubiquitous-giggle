@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTK.Client", "MTK.Client\MTK.Client.csproj", "{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
