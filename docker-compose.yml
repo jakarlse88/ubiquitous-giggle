@@ -1,6 +1,10 @@
 version: "3.7"
 services:
+    sql-server:
+        image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
     mtk-client:
-        image: jakarlse88/mtk-client
-        ports:
-            - "8080:80"
+        build: MTK.Client/.
+    rank-api:
+        build: MTK.RankAPI/.
+        depends_on: 
+            - sql-server

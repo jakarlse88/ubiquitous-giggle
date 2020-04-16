@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTK.Client", "MTK.Client\MTK.Client.csproj", "{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTK.Client", "MTK.Client\MTK.Client.csproj", "{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTK.RankAPI", "MTK.RankService\MTK.RankAPI.csproj", "{B1617DB8-322A-47D9-AD1B-482117F91DF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +17,15 @@ Global
 		{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBAE4C87-AAD1-4BEA-A9DB-8CA8C3BE516C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1617DB8-322A-47D9-AD1B-482117F91DF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1617DB8-322A-47D9-AD1B-482117F91DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1617DB8-322A-47D9-AD1B-482117F91DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1617DB8-322A-47D9-AD1B-482117F91DF2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3711BA66-EC25-4844-94A7-E991F41940E7}
 	EndGlobalSection
 EndGlobal
