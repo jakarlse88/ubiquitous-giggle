@@ -1,30 +1,35 @@
 version: "3.7"
+
 services:
+
     sql-server:
         image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
         environment: 
             - ACCEPT_EULA=Y
-            # - SA_PASSWORD=!Docker123
             - SA_PASSWORD=${SA_PASSWORD_SEED}
             - MSSQL_PID=Express
         healthcheck:
             test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-USA", "-P${SA_PASSWORD_SEED}", "-Q", "SELECT 1"]
         ports:
-            # - "1433:1433"
             - "${SQL_SERVER_PORT_EXT}:${SQL_SERVER_PORT_INT}"
+
+    rabbitmq:
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+
     mtk-client:
         build: MTK.Client/.
         ports:
-            # - "8080:80"
             - "${MTK_CLIENT_PORT_EXT}:${MTK_CLIENT_PORT_INT}"
+
     rank-api:
         build: MTK.RankAPI/.
         environment: 
-            # - ConnectionString=Server=sql-server;Initial Catalog=MTK.RankServiceDb;User Id=sa;Password=!Docker123
             - "ConnectionString=Server=${SQL_SERVER_SERVER_NAME},${SQL_SERVER_PORT_EXT};Initial Catalog=${MTK_RANKAPI_DB_INITIAL_CATALOG};User Id=${MTK_RANKAPI_DB_USER_ID};Password=${MTK_RANKAPI_DB_PASSWORD}"
         command: sh -c "./wait-for ms-sql-server:${SQL_SERVER_PORT_EXT}"
         depends_on: 
             - sql-server
+            - rabbitmq
         ports:
-            # - "8081:80"
             - "${MTK_RANKAPI_PORT_EXT}:${MTK_RANKAPI_PORT_INT}"

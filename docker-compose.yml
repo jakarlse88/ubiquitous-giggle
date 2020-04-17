@@ -1,9 +1,15 @@
 version: "3.7"
 services:
+
     sql-server:
         image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+
     mtk-client:
         build: MTK.Client/.
+
     rank-api:
         build: MTK.RankAPI/.
         depends_on: 
