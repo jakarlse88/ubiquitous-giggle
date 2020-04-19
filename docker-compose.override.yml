@@ -19,12 +19,10 @@ services:
             - "${RABBITMQ_PORT_EXT_2}:5672"
 
     mtk-client:
-        # build: MTK.Client/.
         ports:
             - "${MTK_CLIENT_PORT_EXT}:${MTK_CLIENT_PORT_INT}"
 
     rank-api:
-        # build: MTK.RankAPI/.
         environment: 
             - "ConnectionString=Server=${SQL_SERVER_SERVER_NAME},${SQL_SERVER_PORT_EXT};Initial Catalog=${MTK_RANKAPI_DB_INITIAL_CATALOG};User Id=${MTK_RANKAPI_DB_USER_ID};Password=${MTK_RANKAPI_DB_PASSWORD}"
         command: sh -c "./wait-for ms-sql-server:${SQL_SERVER_PORT_EXT}"

@@ -4,13 +4,17 @@ using Microsoft.Extensions.DependencyInjection;
 using MTK.RankAPI.Data;
 using System;
 using System.Reflection;
+using GreenPipes;
 using MassTransit;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace MTK.RankAPI.Infrastructure
 {
     public static class RankServiceExtensions
     {
-        public static IServiceCollection ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ConfigureDbContext(this IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddDbContext<RankServiceDbContext>(options =>
             {
@@ -37,19 +41,33 @@ namespace MTK.RankAPI.Infrastructure
             return services;
         }
 
-        public static IServiceCollection ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ConfigureMassTransit(this IServiceCollection services,
+            IConfiguration configuration)
         {
-            services.AddMassTransit(cfg =>
+            services.AddSingleton(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
-                cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                var host = cfg.Host("localhost", "/", h => { });
+
+                cfg.SetLoggerFactory(provider.GetService<ILoggerFactory>());
+
+                cfg.ReceiveEndpoint("web-service-endpoint", e =>
                 {
-                    cfg.UseHealthCheck(provider);
+                    e.PrefetchCount = 16;
+                    e.UseMessageRetry(x => x.Interval(2, 100));
 
-                    cfg.Host("rabbitmq://localhost");
+                    // e.Consumer<DoSomethingConsumer>(provider);
 
-                    //cfg.ReceiveEndpoint
-                }));
-            });
+                    EndpointConvention.Map<UpdateRank>(e.InputAddress);
+                });
+            }));
+            
+            services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());
+            services.AddSingleton<ISendEndpointProvider>(provider => provider.GetRequiredService<IBusControl>());
+            services.AddSingleton<IBus>(provider => provider.GetRequiredService<IBusControl>());
+
+            services.AddScoped(provider => provider.GetRequiredService<IBus>().CreateRequestClient<UpdateRank>());
+
+            services.AddSingleton<IHostedService, BusService>();
 
             return services;
         }

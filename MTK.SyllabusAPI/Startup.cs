@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MTK.Contracts;
+using MTK.SyllabusAPI.Infrastructure;
 
 namespace MTK.SyllabusAPI
 {
@@ -31,27 +32,30 @@ namespace MTK.SyllabusAPI
         {
             services.AddControllers();
 
-            services.AddMassTransit(cfg => {
-                cfg.AddConsumer<UpdateRankConsumer>();
+            services.AddSingleton(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+            {
+                var host = cfg.Host("localhost", "/", h => { });
 
-                cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg => {
-                    cfg.UseHealthCheck(provider);
+                cfg.SetLoggerFactory(provider.GetService<ILoggerFactory>());
 
-                    cfg.Host("rabbitmq://localhost");
+                cfg.ReceiveEndpoint("web-service-endpoint", e =>
+                {
+                    e.PrefetchCount = 16;
+                    e.UseMessageRetry(x => x.Interval(2, 100));
 
-                    cfg.ReceiveEndpoint("update-rank", ep =>
-                    {
-                        ep.PrefetchCount = 16;
-                        ep.UseMessageRetry(r => r.Interval(2, 100));
+                    e.Consumer<UpdateRankConsumer>(provider);
 
-                        ep.ConfigureConsumer<UpdateRankConsumer>(provider);
-                    });
-                }));
+                    EndpointConvention.Map<UpdateRank>(e.InputAddress);
+                });
+            }));
+            
+            services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());
+            services.AddSingleton<ISendEndpointProvider>(provider => provider.GetRequiredService<IBusControl>());
+            services.AddSingleton<IBus>(provider => provider.GetRequiredService<IBusControl>());
 
-                //cfg.AddRequestClient<UpdateRank>();
-            });
+            services.AddScoped(provider => provider.GetRequiredService<IBus>().CreateRequestClient<UpdateRank>());
 
-            services.AddMassTransitHostedService();
+            services.AddSingleton<IHostedService, BusService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

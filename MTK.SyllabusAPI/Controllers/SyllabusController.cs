@@ -12,9 +12,9 @@ namespace MTK.SyllabusAPI.Controllers
     public class SyllabusController : ControllerBase
     {
         [HttpPost]
-        public Task<IActionResult> Post()
+        public IActionResult Post()
         {
-            
+            return Ok();
         }
     }
 }

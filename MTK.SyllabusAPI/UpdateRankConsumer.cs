@@ -5,9 +5,9 @@ using MTK.Contracts;
 
 namespace MTK.SyllabusAPI
 {
-    public class UpdateRankConsumer : IConsumer<UpdateRank>
+    public class UpdateRankConsumer : IConsumer<IUpdateRank>
     {
-        public async Task Consume(ConsumeContext<UpdateRank> context)
+        public async Task Consume(ConsumeContext<IUpdateRank> context)
         {
             await Console.Out.WriteLineAsync($"Updating rank: {context.Message.RankId}");
         }

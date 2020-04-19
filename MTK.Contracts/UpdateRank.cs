@@ -2,7 +2,7 @@ using System;
 
 namespace MTK.Contracts
 {
-    public interface UpdateRank
+    public interface IUpdateRank
     {
         Guid EventId { get; }
         DateTime TimeStamp { get; }
