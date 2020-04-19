@@ -1,3 +1,5 @@
+using MTK.EventBus.Events;
+
 namespace MTK.EventBus.Abstractions
 {
     public interface IEventBus

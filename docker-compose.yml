@@ -11,6 +11,15 @@ services:
         build: MTK.Client/.
 
     rank-api:
-        build: MTK.RankAPI/.
+        build:
+            context: .
+            dockerfile: MTK.RankAPI/Dockerfile
+        depends_on: 
+            - sql-server
+
+    syllabus-api:
+        build:
+            context: .
+            dockerfile: MTK.SyllabusAPI/Dockerfile
         depends_on: 
             - sql-server

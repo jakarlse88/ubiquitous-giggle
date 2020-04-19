@@ -4,21 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using MTK.RankAPI.Data;
 using System;
 using System.Reflection;
+using MassTransit;
 
 namespace MTK.RankAPI.Infrastructure
 {
     public static class RankServiceExtensions
     {
-        public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            //var server = configuration["DBServer"] ?? "ms-sql-server";
-            //var port = configuration["DBPort"] ?? "1433";
-            //var user = configuration["DBUser"] ?? "SA";
-            //var password = configuration["DBPassword"] ?? "!Docker123";
-            //var database = configuration["Database"] ?? "MTK.RankServiceDb";
-
-            //var connectionString = $"Server={server},{port};Initial Catalog={database};User ID={user};Password={password}";
-
             services.AddDbContext<RankServiceDbContext>(options =>
             {
                 options.UseSqlServer(configuration["ConnectionString"], sqlServerOptionsAction: sqlOptions =>
@@ -33,6 +26,32 @@ namespace MTK.RankAPI.Infrastructure
                             errorNumbersToAdd: null);
                 });
             });
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureControllers(this IServiceCollection services)
+        {
+            services.AddControllers();
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMassTransit(cfg =>
+            {
+                cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                {
+                    cfg.UseHealthCheck(provider);
+
+                    cfg.Host("rabbitmq://localhost");
+
+                    //cfg.ReceiveEndpoint
+                }));
+            });
+
+            return services;
         }
     }
 }

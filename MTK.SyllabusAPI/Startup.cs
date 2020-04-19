@@ -1,13 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GreenPipes;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MTK.RankAPI.Data;
-using MTK.RankAPI.Infrastructure;
+using Microsoft.Extensions.Logging;
+using MTK.Contracts;
 
-namespace MTK.RankAPI
+namespace MTK.SyllabusAPI
 {
     public class Startup
     {
@@ -21,10 +29,29 @@ namespace MTK.RankAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .ConfigureControllers()
-                .ConfigureDbContext(Configuration)
-                .ConfigureMassTransit(Configuration); // TODO: verify whether needs Configuration
+            services.AddControllers();
+
+            services.AddMassTransit(cfg => {
+                cfg.AddConsumer<UpdateRankConsumer>();
+
+                cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg => {
+                    cfg.UseHealthCheck(provider);
+
+                    cfg.Host("rabbitmq://localhost");
+
+                    cfg.ReceiveEndpoint("update-rank", ep =>
+                    {
+                        ep.PrefetchCount = 16;
+                        ep.UseMessageRetry(r => r.Interval(2, 100));
+
+                        ep.ConfigureConsumer<UpdateRankConsumer>(provider);
+                    });
+                }));
+
+                //cfg.AddRequestClient<UpdateRank>();
+            });
+
+            services.AddMassTransitHostedService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,8 +61,6 @@ namespace MTK.RankAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            PrepDb.PrepPopulation(app);
 
             app.UseHttpsRedirection();
 
